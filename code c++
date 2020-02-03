@@ -1,0 +1,117 @@
+#include<stdio.h>
+
+int manyNodes , manyEdges;
+int nodeColor[250] = {};
+int edges[250][250] = {{}};
+int nodes[250] = {};
+
+bool bicol = true;
+
+bool giveColor(int start,int color){
+	
+	if(nodeColor[start] != 0){
+		return false;
+	}
+	
+	nodeColor[start] = color;
+	
+	for(int i=0;i<manyNodes;i++){
+		
+		if(edges[start][nodes[i]] == 1){
+			giveColor(nodes[i],color * -1);
+			edges[start][nodes[i]] = -1;
+			edges[nodes[i]][start] = -1;
+		}	
+	}
+	return true;
+}
+
+int main(){
+	
+	int count = 0;
+	
+	while(true){
+		
+		count = 0;
+		bicol = true;
+		for(int i=0;i<250;i++){
+			nodeColor[i] = 0;
+		}
+		for(int i=0;i<250;i++){
+			for(int j=0;j<250;j++){
+				edges[i][j] = 0;
+			}
+		}
+		for(int i=0;i<250;i++){
+			nodes[i] = 0;
+		}
+		
+		scanf("%d",&manyNodes);
+		
+		if(manyNodes == 0){
+			break;
+		}
+		
+		scanf("%d",&manyEdges);
+		
+		int a , b;
+		
+		for(int i=0;i<manyEdges;i++){
+			scanf("%d %d",&a,&b);
+			
+			if(count == 0){
+				nodes[0] = a;
+				nodes[1] = b;
+				count+=2;
+			}
+			else{
+				bool flagA = true;
+				bool flagB = true;
+				
+				for(int i=0;i<count;i++){
+					if(nodes[i] == a){
+						flagA = false;
+					}
+					if(nodes[i] == b){
+						flagB = false;
+					}
+				}
+				
+				if(flagA){
+					nodes[count] = a;
+					count++;
+				}
+				if(flagB){
+					nodes[count] = b;
+					count++;
+				}
+				
+			}
+			
+			edges[a][b] = 1;
+			edges[b][a] = 1;
+		}
+		giveColor(0,1);
+		
+		for(int i=0;i<manyNodes;i++){
+			for(int j=0;j<manyNodes;j++){
+				
+				if(nodeColor[nodes[i]] == nodeColor[nodes[j]] && nodes[i] != nodes[j] && (edges[nodes[i]][nodes[j]] == -1 || edges[nodes[j]][nodes[i]] == -1)){
+					bicol = false;
+					break;
+				}
+			}
+			if(!bicol)break;
+		}
+		
+		if(bicol){
+			printf("BICOLORABLE.\n");
+		}
+		else{
+			printf("NOT BICOLORABLE.\n");
+		}
+		
+	}
+	
+	return 0;
+}
